@@ -13,21 +13,22 @@
         <div class="col-md-6 col-lg-4">
             <div class="card shadow">
                 <div class="card-body p-5">
-                    <h2>Sign In</h2>
-                    <p>Welcome back! Please enter your details</p>
+                    <h2>Register</h2>
                     <form method="post" class="login-form">
                         {% csrf_token %}
 
                         {% if form.errors %}
-                            <div class="alert alert-danger">
-                                Please enter a correct email address and password.
-                            </div>
+                            {% for error in form.errors %}
+                                <div class="alert alert-danger">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
                         {% endif %}
 
                         <div class="form-group">
                             <label for="id_username">Email Address</label>
                             <input type="email"
-                                   name="username"
+                                   name="email"
                                    id="id_username"
                                    class="form-control {% if form.username.errors %}is-invalid{% endif %}"
                                    placeholder="Enter your email"
@@ -43,22 +44,37 @@
                         <div class="form-group">
                             <label for="id_password">Password</label>
                             <input type="password"
-                                   name="password"
+                                   name="password1"
                                    id="id_password"
-                                   class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                   class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
                                    placeholder="Enter your password"
                                    required>
-                            {% if form.password.errors %}
+                            {% if form.password1.errors %}
                                 <div class="invalid-feedback">
-                                    {{ form.password.errors.0 }}
+                                    {{ form.password1.errors.0 }}
                                 </div>
                             {% endif %}
                         </div>
 
+                        <div class="form-group">
+                            <label for="id_password">Confirm Password</label>
+                            <input type="password"
+                                   name="password2"
+                                   id="id_password"
+                                   class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                                   placeholder="Confirm your password"
+                                   required>
+                            {% if form.password2.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.password2.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
 
-                        <button type="submit" class="btn btn-primary btn-login">Sign In</button>
+                        <button type="submit" class="btn btn-primary btn-login">Register</button>
+
                         <div class="text-center mt-3">
-                            <a href="/register/">Create Account</a>
+                            <p>Already have an account? <a href="/login/">Login here</a>.</p>
                         </div>
 
                     </form>
