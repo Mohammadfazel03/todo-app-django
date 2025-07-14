@@ -1,0 +1,16 @@
+x-logging:
+  &default-logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100M
+
+services:
+
+  django:
+    build: "."
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
