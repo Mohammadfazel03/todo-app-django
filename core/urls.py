@@ -23,5 +23,6 @@ urlpatterns = [
     path('', include('account.urls')),
     path('', include(('task.urls', 'task'), namespace='task')),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-
+    path('api/v1/', include('account.api.v1.urls')),
+    path('api/v1/', include('task.api.v1.urls'))
 ]
