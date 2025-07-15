@@ -1,6 +1,8 @@
+from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import viewsets, mixins, permissions, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import BooleanField
 from rest_framework.response import Response
 
 from task.api.v1.permissions import OwnerPermission
@@ -15,6 +17,17 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
 
+    @extend_schema(
+        request=inline_serializer(
+            'input',
+            {
+                'is_complete': BooleanField(required=True, allow_null=False),
+            }
+        ),
+        responses={
+            200: None
+        }
+    )
     @action(methods=['post'], detail=False, url_path='change_state/<int:pk>')
     def change_state(self, request, pk=None):
         if not request.data.get('is_complete') or request.data['is_complete'] not in [True, False]:
