@@ -31,12 +31,14 @@ class AuthViewSet(viewsets.ViewSet):
         email = EmailMessage(mail_subject, message, to=[user.email])
         email.send()
 
-    def send_reset_password_email(self, user):
+    def send_reset_password_email(self, user, request):
+        current_site = get_current_site(request)
         token = AccessToken()
         token.set_exp(from_time=timezone.now())
         access_token = token.for_user(user)
         message = render_to_string('reset_password_email.html', {
             'username': user.email,
+            'domain': current_site.domain,
             'token': access_token
         })
         mail_subject = 'Activate your account.'
@@ -101,7 +103,7 @@ class AuthViewSet(viewsets.ViewSet):
         serializer = UserEmailVerificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        self.send_reset_password_email(user)
+        self.send_reset_password_email(user, request)
         return Response(status=status.HTTP_200_OK)
 
     @extend_schema(
