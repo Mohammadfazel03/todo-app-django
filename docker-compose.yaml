@@ -8,6 +8,7 @@ x-logging:
 services:
 
   django:
+    container_name: "django"
     build: "."
     restart: unless-stopped
     env_file:
