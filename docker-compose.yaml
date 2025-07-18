@@ -8,6 +8,7 @@ x-logging:
 services:
 
   django:
+    container_name: "django"
     build: "."
     restart: unless-stopped
     env_file:
@@ -16,6 +17,7 @@ services:
       - "8000:8000"
 
   smtp4dev:
+    container_name: "smtp4dev"
     image: rnwood/smtp4dev:v3
     restart: always
     ports:
