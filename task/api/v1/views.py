@@ -6,7 +6,7 @@ from rest_framework.serializers import BooleanField
 from rest_framework.response import Response
 
 from task.api.v1.permissions import OwnerPermission
-from task.api.v1.serializers import TaskSerializer
+from task.api.v1.serializers import TaskSerializer, TaskChangeStateSerializer
 from task.models import Task
 
 
@@ -18,20 +18,15 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Task.objects.filter(user=self.request.user)
 
     @extend_schema(
-        request=inline_serializer(
-            'input',
-            {
-                'is_complete': BooleanField(required=True, allow_null=False),
-            }
-        ),
+
         responses={
             200: None
         }
     )
-    @action(methods=['post'], detail=False, url_path='change_state/<int:pk>')
+    @action(methods=['post'], detail=False, url_path='change_state/(?P<pk>\d)', serializer_class=TaskChangeStateSerializer)
     def change_state(self, request, pk=None):
-        if not request.data.get('is_complete') or request.data['is_complete'] not in [True, False]:
-            raise ValidationError({'is_complete': "this fields is required"})
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         try:
             task = Task.objects.get(pk=pk)

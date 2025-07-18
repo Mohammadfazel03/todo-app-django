@@ -12,3 +12,7 @@ class TaskSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+
+class TaskChangeStateSerializer(serializers.Serializer):
+    is_complete = serializers.BooleanField(allow_null=False, required=True)
