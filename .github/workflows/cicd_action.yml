@@ -1,0 +1,24 @@
+name: CICD app
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: create .env file
+      run: |
+        echo "${{ secrets.ENV }}" > .env
+      
+    - name: Build the Docker image
+      run: docker compose up --build -d
+    - name: run test
+      run: docker exec django sh -c "python manage.py test"
