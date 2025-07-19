@@ -20,5 +20,5 @@ RUN pip3 --timeout 1000 install --no-cache-dir  -r requirements.txt
 COPY --chown=django . .
 
 RUN chmod +x ./entry.sh
-
-ENTRYPOINT ["./entry.sh"]
+RUN chmod +x ./celery_entry.sh
+RUN chmod +x ./celery_beat_entry.sh

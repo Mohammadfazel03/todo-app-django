@@ -11,10 +11,14 @@ services:
     container_name: "django"
     build: "."
     restart: unless-stopped
+    entrypoint: './entry.sh'
     env_file:
       - ./.env
     ports:
       - "8000:8000"
+    volumes:
+      - "./db.sqlite3:/home/django/db.sqlite3"
+      - "./mediafiles/:/home/django/mediafiles/"
 
   smtp4dev:
     container_name: "smtp4dev"
@@ -30,6 +34,41 @@ services:
     volumes:
       # This is where smtp4dev stores the database..
       - smtp4dev-data:/smtp4dev
+
+  celery_broker:
+    container_name: 'celery_broker'
+    image: 'redis:7.4'
+    ports:
+      - '6379:6379'
+
+  celery:
+    container_name: "celery"
+    build: '.'
+    entrypoint: './celery_entry.sh'
+    env_file:
+      - ./.env
+    volumes:
+      - "./db.sqlite3:/home/django/db.sqlite3"
+      - "./mediafiles/:/home/django/mediafiles/"
+    depends_on:
+      - 'celery_broker'
+      - 'django'
+
+
+
+  celery_beat:
+    container_name: "celery_beat"
+    build: '.'
+    entrypoint: './celery_beat_entry.sh'
+    env_file:
+      - ./.env
+    volumes:
+      - "./db.sqlite3:/home/django/db.sqlite3"
+      - "./mediafiles/:/home/django/mediafiles/"
+    depends_on:
+      - 'celery_broker'
+      - 'django'
+      - 'celery'
 
 volumes:
   smtp4dev-data:
