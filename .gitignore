@@ -138,3 +138,5 @@ GitHub.sublime-settings
 .history
 /.vscode/
 /git repo.txt
+/staticfiles/
+/mediafiles/
