@@ -70,5 +70,11 @@ services:
       - 'django'
       - 'celery'
 
+  redis_cache:
+    container_name: "redis_cache"
+    image: 'redis:7.4'
+    ports:
+      - '6388:6379'
+
 volumes:
   smtp4dev-data:

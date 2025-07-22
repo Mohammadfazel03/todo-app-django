@@ -154,3 +154,14 @@ EMAIL_USE_TLS = eval(os.getenv('EMAIL_USE_TLS'))
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 
 CELERY_RESULT_BACKEND = 'django-db'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": [
+            f"redis://{os.getenv('REDIS_CACHE_HOST')}:{os.getenv('REDIS_CACHE_PORT')}"
+        ],
+    }
+}
+
+WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')

@@ -1,7 +1,10 @@
+from django.urls import path
 from rest_framework import routers
 
-from task.api.v1.views import TaskViewSet
+from task.api.v1.views import TaskViewSet, WeatherApiView
 
 router = routers.SimpleRouter()
 router.register(r'task', TaskViewSet, 'tasks')
-urlpatterns = [] + router.urls
+urlpatterns = [
+                  path('weather', WeatherApiView.as_view())
+              ] + router.urls

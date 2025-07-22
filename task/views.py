@@ -1,5 +1,8 @@
 from distutils.util import strtobool
 
+import requests
+from django.core.cache import cache
+
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
@@ -7,6 +10,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, UpdateView, DeleteView
 
+from core.settings import WEATHER_API_KEY
 from task.forms import CreateTaskForm
 from task.models import Task
 
@@ -19,6 +23,30 @@ class IndexView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if cache.has_key('weather'):
+            context['weather_temp'] = cache.get('weather').get('main', {}).get('temp', None)
+            context['weather_location'] = cache.get('weather').get('name', None)
+
+        try:
+            response = requests.get(
+                f'https://api.openweathermap.org/data/2.5/weather?lat=33.97979&lon=51.444865&appid={WEATHER_API_KEY}')
+
+            if response.status_code == 200:
+                response = response.json()
+                cache.set('weather', response, timeout=20 * 60)
+                context['weather_temp'] = response.get('main', {}).get('temp', None)
+                context['weather_location'] = response.get('name', None)
+            else:
+                context['weather_temp'] = None
+                context['weather_location'] = None
+        except:
+            context['weather_temp'] = None
+            context['weather_location'] = None
+
+        return context
 
 
 class CreateTaskView(LoginRequiredMixin, View):

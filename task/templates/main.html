@@ -10,7 +10,18 @@
 
 </head>
 <body>
-<div class="d-flex justify-content-end mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3 px-3">
+
+    <div class="weather-box text-start">
+        <div class="d-inline-flex align-items-center text-primary">
+            <i class="bi bi-cloud-sun-fill fs-4 me-2"></i>
+            <div>
+                <strong>{{ weather_temp }}°C</strong><br>
+                <small>{{ weather_location }}</small>
+            </div>
+        </div>
+    </div>
+
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">
