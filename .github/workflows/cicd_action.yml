@@ -9,9 +9,8 @@ on:
 jobs:
 
   build:
-
+    name: Build and Test
     runs-on: ubuntu-22.04
-
     steps:
     - uses: actions/checkout@v4
     - name: create .env file
@@ -19,6 +18,26 @@ jobs:
         echo "${{ secrets.ENV }}" > .env
       
     - name: Build the Docker image
-      run: docker compose up --build -d
+      run: docker compose -f docker-compose-prod.yml up --build -d
     - name: run test
-      run: docker exec django sh -c "python manage.py test"
+      run: docker exec django sh -c "python manage.py test && flake8"
+
+  deploy:
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }} 
+    name: deploy
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Connect and Execute Commands
+      uses: appleboy/ssh-action@master
+      with:
+        username: ${{secrets.USERNAME}}
+        password: ${{secrets.PASSWORD}}
+        host: ${{secrets.HOST}}
+        port: ${{secrets.PORT}}
+        script: |
+          cd ${{secrets.PROJECT_PATH}}
+          docker compose -f docker-compose-prod.yml stop
+          git pull
+          docker compose -f docker-compose-prod.yml restart
